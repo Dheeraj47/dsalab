@@ -1,0 +1,152 @@
+#include <stdio.h>
+#include <string.h>
+
+#define SIZE 10
+
+// Arrays to store names and phone numbers
+char name[10][20];
+char phone[10][15];
+
+// 0 means empty, 1 means occupied
+int used[10] = {0};
+
+// Function to calculate hash index
+int hash(char n[])
+{
+    int sum = 0, i;
+
+    // Adding ASCII values of characters
+    for (i = 0; n[i] != '\0'; i++)
+        sum = sum + n[i];
+
+    // Returning hash index
+    return sum % SIZE;
+}
+
+// Function to insert a contact
+void insert()
+{
+    char n[20], p[15];
+    int i, pos;
+
+    // Taking name and phone number
+    printf("Enter name: ");
+    scanf("%19s", n);
+
+    printf("Enter phone: ");
+    scanf("%14s", p);
+
+    // Calculating hash position
+    pos = hash(n);
+
+    // Checking for an empty position using Linear Probing
+    for (i = 0; i < SIZE; i++)
+    {
+        int j = (pos + i) % SIZE;
+
+        if (!used[j])
+        {
+            // Storing name and phone number
+            strcpy(name[j], n);
+            strcpy(phone[j], p);
+
+            // Marking position as occupied
+            used[j] = 1;
+
+            printf("Contact Added!\n");
+            return;
+        }
+    }
+
+    // If no empty position is available
+    printf("Table Full!\n");
+}
+
+// Function to search a contact
+void search()
+{
+    char n[20];
+    int i, pos;
+
+    printf("Enter name: ");
+    scanf("%19s", n);
+
+    // Calculating hash position
+    pos = hash(n);
+
+    // Searching using Linear Probing
+    for (i = 0; i < SIZE; i++)
+    {
+        int j = (pos + i) % SIZE;
+
+        // Stop if an empty position is found
+        if (!used[j])
+            break;
+
+        // Comparing stored name with searched name
+        if (strcmp(name[j], n) == 0)
+        {
+            printf("Phone: %s\n", phone[j]);
+            return;
+        }
+    }
+
+    // If contact is not found
+    printf("Contact Not Found!\n");
+}
+
+// Function to display all contacts
+void display()
+{
+    int i;
+
+    for (i = 0; i < SIZE; i++)
+    {
+        // Display only occupied positions
+        if (used[i])
+            printf("%s - %s\n", name[i], phone[i]);
+    }
+}
+
+// Main function
+int main()
+{
+    int ch;
+
+    // Display menu repeatedly
+    do
+    {
+        printf("\n1.Insert");
+        printf("\n2.Search");
+        printf("\n3.Display");
+        printf("\n4.Exit");
+        printf("\nEnter choice: ");
+        scanf("%d", &ch);
+
+        // Performing operation based on choice
+        switch (ch)
+        {
+            case 1:
+                insert();
+                break;
+
+            case 2:
+                search();
+                break;
+
+            case 3:
+                display();
+                break;
+
+            case 4:
+                printf("Exit");
+                break;
+
+            default:
+                printf("Wrong Choice");
+        }
+
+    } while (ch != 4);
+
+    return 0;
+}

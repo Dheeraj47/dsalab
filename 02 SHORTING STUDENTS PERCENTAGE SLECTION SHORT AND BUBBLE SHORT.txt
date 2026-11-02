@@ -1,0 +1,59 @@
+#include <stdio.h>
+
+int main()
+{
+    // Declaring variables
+    int a[10], n, i, j, temp, ch;
+
+    // Taking number of students
+    printf("Enter number of students: ");
+    scanf("%d", &n);
+
+    // Taking percentages from students
+    printf("Enter percentages:\n");
+
+    for(i = 0; i < n; i++)
+    {
+        scanf("%d", &a[i]);
+    }
+
+    // Displaying sorting choices
+    printf("1. Selection Sort\n2. Bubble Sort\n");
+    scanf("%d", &ch);
+
+    // Outer loop for sorting passes
+    for(i = 0; i < n-1; i++)
+    {
+        // Inner loop:
+        // Selection Sort starts from i+1
+        // Bubble Sort starts from 0
+
+        for(j = (ch == 1 ? i+1 : 0);
+            j < (ch == 1 ? n : n-i-1); j++)
+        {
+            // Comparing elements
+            // Selection: compare a[j] with a[i]
+            // Bubble: compare a[j] with a[j+1]
+
+            if(a[j] > a[ch == 1 ? i : j+1])
+            {
+                // Swapping elements using temp
+                temp = a[j];
+
+                a[j] = a[ch == 1 ? i : j+1];
+
+                a[ch == 1 ? i : j+1] = temp;
+            }
+        }
+    }
+
+    // Displaying sorted percentages
+    printf("Sorted percentages:\n");
+
+    for(i = 0; i < n; i++)
+    {
+        printf("%d ", a[i]);
+    }
+
+    return 0;
+}

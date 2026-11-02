@@ -1,0 +1,69 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Structure of a tree node
+struct node
+{
+    int data;
+    struct node *left, *right;
+};
+
+// Function to insert a node into BST
+struct node* insert(struct node *root, int x)
+{
+    // If position is empty, create a new node
+    if (root == NULL)
+    {
+        root = (struct node*)malloc(sizeof(struct node));
+
+        root->data = x;
+        root->left = NULL;
+        root->right = NULL;
+    }
+
+    // Insert smaller value into left subtree
+    else if (x < root->data)
+        root->left = insert(root->left, x);
+
+    // Insert bigger value into right subtree
+    else if (x > root->data)
+        root->right = insert(root->right, x);
+
+    // Return updated root
+    return root;
+}
+
+// Function for inorder traversal
+void inorder(struct node *root)
+{
+    if (root != NULL)
+    {
+        inorder(root->left);       // Visit left subtree
+        printf("%d ", root->data); // Print root node
+        inorder(root->right);      // Visit right subtree
+    }
+}
+
+int main()
+{
+    struct node *root = NULL;
+    int n, x, i;
+
+    printf("Enter number of nodes: ");
+    scanf("%d", &n);
+
+    // Take input and insert nodes
+    for (i = 0; i < n; i++)
+    {
+        printf("Enter value: ");
+        scanf("%d", &x);
+
+        root = insert(root, x);
+    }
+
+    // Display inorder traversal
+    printf("Inorder Traversal: ");
+    inorder(root);
+
+    return 0;
+}

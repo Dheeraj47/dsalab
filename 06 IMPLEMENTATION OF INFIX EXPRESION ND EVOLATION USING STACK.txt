@@ -1,0 +1,127 @@
+#include <stdio.h>
+#include <ctype.h>
+
+// Character stack for operators
+char stack[50];
+int top = -1;
+
+// Function to insert operator into stack
+void push(char x)
+{
+    stack[++top] = x;
+}
+
+// Function to remove operator from stack
+char pop()
+{
+    return stack[top--];
+}
+
+// Function to check operator priority
+int priority(char x)
+{
+    if (x == '*' || x == '/')
+        return 2;
+
+    if (x == '+' || x == '-')
+        return 1;
+
+    return 0;
+}
+
+int main()
+{
+    char infix[50], postfix[50];
+    int i, j = 0;
+
+    // Taking infix expression
+    printf("Enter Infix Expression: ");
+    scanf("%49s", infix);
+
+    // Converting infix to postfix
+    for (i = 0; infix[i] != '\0'; i++)
+    {
+        // If character is a digit, add directly
+        // to postfix expression
+        if (isdigit(infix[i]))
+        {
+            postfix[j++] = infix[i];
+        }
+        else
+        {
+            // Pop operators having higher or equal priority
+            while (top != -1 &&
+                   priority(stack[top]) >= priority(infix[i]))
+            {
+                postfix[j++] = pop();
+            }
+
+            // Push current operator
+            push(infix[i]);
+        }
+    }
+
+    // Pop all remaining operators
+    while (top != -1)
+    {
+        postfix[j++] = pop();
+    }
+
+    // Ending postfix string
+    postfix[j] = '\0';
+
+    // Display postfix expression
+    printf("Postfix Expression: %s\n", postfix);
+
+    // Stack for postfix evaluation
+    int s[50], t = -1, a, b;
+
+    // Reading postfix expression
+    for (i = 0; postfix[i] != '\0'; i++)
+    {
+        // If character is a digit
+        if (isdigit(postfix[i]))
+        {
+            // Convert character into integer and push
+            s[++t] = postfix[i] - '0';
+        }
+        else
+        {
+            // Pop two operands
+            b = s[t--];
+            a = s[t--];
+
+            // Perform mathematical operation
+            switch (postfix[i])
+            {
+                case '+':
+                    s[++t] = a + b;
+                    break;
+
+                case '-':
+                    s[++t] = a - b;
+                    break;
+
+                case '*':
+                    s[++t] = a * b;
+                    break;
+
+                case '/':
+                    // Checking division by zero
+                    if (b == 0)
+                    {
+                        printf("Division by zero error!\n");
+                        return 1;
+                    }
+
+                    s[++t] = a / b;
+                    break;
+            }
+        }
+    }
+
+    // Display final calculated result
+    printf("Result: %d\n", s[t]);
+
+    return 0;
+}

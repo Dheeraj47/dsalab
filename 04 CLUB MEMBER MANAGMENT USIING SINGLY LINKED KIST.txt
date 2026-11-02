@@ -1,0 +1,151 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Creating a structure for Member
+struct Member
+{
+    int id;
+    char name[50];
+
+    // Pointer to the next node
+    struct Member *next;
+};
+
+// Head points to the first node
+struct Member *head = NULL;
+
+// Function to add a new member
+void add()
+{
+    struct Member *newnode, *temp;
+
+    // Dynamically allocating memory
+    newnode = malloc(sizeof(struct Member));
+
+    // Taking member details
+    printf("Enter ID: ");
+    scanf("%d", &newnode->id);
+
+    printf("Enter Name: ");
+    scanf("%49s", newnode->name);
+
+    // Setting next pointer to NULL
+    newnode->next = NULL;
+
+    // Checking whether linked list is empty
+    if (head == NULL)
+    {
+        head = newnode;
+    }
+    else
+    {
+        // Starting from first node
+        temp = head;
+
+        // Moving to the last node
+        while (temp->next != NULL)
+            temp = temp->next;
+
+        // Connecting last node to new node
+        temp->next = newnode;
+    }
+
+    printf("Member Added!\n");
+}
+
+// Function to display all members
+void display()
+{
+    // Starting from first node
+    struct Member *temp = head;
+
+    // Checking if list is empty
+    if (temp == NULL)
+    {
+        printf("No Members!\n");
+        return;
+    }
+
+    // Traversing the linked list
+    while (temp != NULL)
+    {
+        printf("ID: %d Name: %s\n",
+               temp->id, temp->name);
+
+        // Moving to next node
+        temp = temp->next;
+    }
+}
+
+// Function to search a member
+void search()
+{
+    int id;
+
+    // Starting from first node
+    struct Member *temp = head;
+
+    // Taking ID to search
+    printf("Enter ID to search: ");
+    scanf("%d", &id);
+
+    // Searching through linked list
+    while (temp != NULL)
+    {
+        // Checking whether ID matches
+        if (temp->id == id)
+        {
+            printf("Member Found: %s\n", temp->name);
+            return;
+        }
+
+        // Moving to next node
+        temp = temp->next;
+    }
+
+    // If member is not found
+    printf("Member Not Found!\n");
+}
+
+// Main function
+int main()
+{
+    int choice;
+
+    // Displaying menu repeatedly
+    do
+    {
+        printf("\n1. Add Member");
+        printf("\n2. Display Members");
+        printf("\n3. Search Member");
+        printf("\n4. Exit");
+        printf("\nEnter choice: ");
+        scanf("%d", &choice);
+
+        // Performing operation based on choice
+        switch (choice)
+        {
+            case 1:
+                add();
+                break;
+
+            case 2:
+                display();
+                break;
+
+            case 3:
+                search();
+                break;
+
+            case 4:
+                printf("Exit\n");
+                break;
+
+            default:
+                printf("Invalid Choice!\n");
+        }
+
+    } while (choice != 4);
+
+    return 0;
+}

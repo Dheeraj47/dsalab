@@ -1,0 +1,177 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Creating a Doubly Linked List node
+struct node
+{
+    int id;
+
+    // Pointer to previous and next nodes
+    struct node *prev, *next;
+};
+
+// Head points to the first node
+struct node *head = NULL;
+
+// Function to book a ticket
+void book()
+{
+    struct node *newnode, *temp;
+
+    // Dynamically allocating memory
+    newnode = malloc(sizeof(struct node));
+
+    if (newnode == NULL)
+    {
+        printf("Memory Allocation Failed!\n");
+        return;
+    }
+
+    // Taking ticket ID
+    printf("Enter Ticket ID: ");
+    scanf("%d", &newnode->id);
+
+    // Initially both pointers are NULL
+    newnode->next = NULL;
+    newnode->prev = NULL;
+
+    // Checking whether list is empty
+    if (head == NULL)
+    {
+        head = newnode;
+    }
+    else
+    {
+        // Starting from first node
+        temp = head;
+
+        // Moving to the last node
+        while (temp->next != NULL)
+            temp = temp->next;
+
+        // Connecting new node at the end
+        temp->next = newnode;
+        newnode->prev = temp;
+    }
+
+    printf("Ticket Booked!\n");
+}
+
+// Function to display all tickets
+void display()
+{
+    // Starting from first node
+    struct node *temp = head;
+
+    // Checking if list is empty
+    if (head == NULL)
+    {
+        printf("No Tickets!\n");
+        return;
+    }
+
+    // Traversing the list
+    while (temp != NULL)
+    {
+        printf("Ticket ID: %d\n", temp->id);
+
+        // Moving to next node
+        temp = temp->next;
+    }
+}
+
+// Function to cancel a ticket
+void cancel()
+{
+    struct node *temp = head;
+    int id;
+
+    // Taking ticket ID to cancel
+    printf("Enter Ticket ID: ");
+    scanf("%d", &id);
+
+    // Searching for the ticket
+    while (temp != NULL && temp->id != id)
+        temp = temp->next;
+
+    // If ticket is not found
+    if (temp == NULL)
+    {
+        printf("Ticket Not Found!\n");
+        return;
+    }
+
+    // If deleting the first node
+    if (temp->prev == NULL)
+    {
+        head = temp->next;
+    }
+    else
+    {
+        // Connecting previous node to next node
+        temp->prev->next = temp->next;
+    }
+
+    // Updating previous pointer of next node
+    if (temp->next != NULL)
+    {
+        temp->next->prev = temp->prev;
+    }
+
+    // Releasing deleted node's memory
+    free(temp);
+
+    printf("Ticket Cancelled!\n");
+}
+
+// Main function
+int main()
+{
+    int ch;
+
+    // Displaying menu repeatedly
+    do
+    {
+        printf("\n1. Book Ticket");
+        printf("\n2. Display Ticket");
+        printf("\n3. Cancel Ticket");
+        printf("\n4. Exit");
+
+        printf("\nEnter Choice: ");
+        scanf("%d", &ch);
+
+        // Performing operation based on choice
+        switch (ch)
+        {
+            case 1:
+                book();
+                break;
+
+            case 2:
+                display();
+                break;
+
+            case 3:
+                cancel();
+                break;
+
+            case 4:
+                printf("Thank You!\n");
+                break;
+
+            default:
+                printf("Wrong Choice!\n");
+        }
+
+    } while (ch != 4);
+
+    // Freeing remaining nodes before exiting
+    while (head != NULL)
+    {
+        struct node *temp = head;
+        head = head->next;
+        free(temp);
+    }
+
+    return 0;
+}

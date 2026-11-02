@@ -1,0 +1,97 @@
+#include <stdio.h>
+
+int main()
+{
+    // Declaring variables
+    int a[10], n, i, key, ch;
+    int low, high, mid, found;
+
+    // Taking the size of array
+    printf("Enter size: ");
+    scanf("%d", &n);
+
+    // Taking sorted elements from user
+    printf("Enter sorted numbers:\n");
+
+    for(i = 0; i < n; i++)
+    {
+        scanf("%d", &a[i]);
+    }
+
+    // Displaying search menu
+    printf("\n1.Linear Search");
+    printf("\n2.Binary Search");
+    printf("\nEnter choice: ");
+    scanf("%d", &ch);
+
+    // Taking number to be searched
+    printf("Enter number to search: ");
+    scanf("%d", &key);
+
+    // Initially assuming number is not found
+    found = 0;
+
+    // LINEAR SEARCH
+    if(ch == 1)
+    {
+        // Checking each element one by one
+        for(i = 0; i < n; i++)
+        {
+            if(a[i] == key)
+            {
+                // Displaying position (index + 1)
+                printf("Found at position %d", i+1);
+
+                found = 1;
+
+                // Stopping the loop
+                break;
+            }
+        }
+    }
+
+    // BINARY SEARCH
+    else if(ch == 2)
+    {
+        // Setting starting and ending indexes
+        low = 0;
+        high = n-1;
+
+        // Repeating until search range exists
+        while(low <= high)
+        {
+            // Finding middle index
+            mid = (low + high)/2;
+
+            // Checking middle element
+            if(a[mid] == key)
+            {
+                printf("Found at position %d", mid+1);
+
+                found = 1;
+
+                break;
+            }
+
+            // If key is greater, search right half
+            else if(key > a[mid])
+            {
+                low = mid+1;
+            }
+
+            // If key is smaller, search left half
+            else
+            {
+                high = mid-1;
+            }
+        }
+    }
+
+    // If number is not found
+    if(found == 0)
+    {
+        printf("Number not found!");
+    }
+
+    return 0;
+}
