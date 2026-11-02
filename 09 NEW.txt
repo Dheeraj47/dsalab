@@ -1,0 +1,262 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_CITIES 10
+
+// Structure for adjacency list node
+struct Node {
+    int cityIndex;
+    int cost;
+    struct Node *next;
+};
+
+// Global variables
+char cityNames[MAX_CITIES][30];
+int numCities = 0;
+int visited[MAX_CITIES];
+
+// Function to find city index
+int getCityIndex(char name[]) {
+    int i;
+
+    for (i = 0; i < numCities; i++) {
+        if (strcmp(cityNames[i], name) == 0)
+            return i;
+    }
+
+    return -1;
+}
+
+// Function to add an undirected flight route
+void addFlight(struct Node *adjList[],
+               int src, int dest, int cost) {
+
+    struct Node *newNode;
+
+    // Add destination to source list
+    newNode = malloc(sizeof(struct Node));
+
+    if (newNode == NULL) {
+        printf("Memory allocation failed.\n");
+        exit(1);
+    }
+
+    newNode->cityIndex = dest;
+    newNode->cost = cost;
+    newNode->next = adjList[src];
+    adjList[src] = newNode;
+
+    // Add source to destination list
+    newNode = malloc(sizeof(struct Node));
+
+    if (newNode == NULL) {
+        printf("Memory allocation failed.\n");
+        exit(1);
+    }
+
+    newNode->cityIndex = src;
+    newNode->cost = cost;
+    newNode->next = adjList[dest];
+    adjList[dest] = newNode;
+}
+
+// Function to display graph
+void displayGraph(struct Node *adjList[]) {
+    int i;
+    struct Node *temp;
+
+    if (numCities == 0) {
+        printf("No cities added yet.\n");
+        return;
+    }
+
+    printf("\n===== FLIGHT PATH NETWORK =====\n");
+
+    for (i = 0; i < numCities; i++) {
+        printf("%s -> ", cityNames[i]);
+
+        temp = adjList[i];
+
+        // Traverse linked list
+        while (temp != NULL) {
+            printf("(%s, Cost: %d) ",
+                   cityNames[temp->cityIndex],
+                   temp->cost);
+
+            temp = temp->next;
+        }
+
+        printf("\n");
+    }
+}
+
+// Depth First Search function
+void DFS(int cityIndex, struct Node *adjList[]) {
+    struct Node *temp;
+
+    // Mark city as visited
+    visited[cityIndex] = 1;
+
+    printf("%s ", cityNames[cityIndex]);
+
+    temp = adjList[cityIndex];
+
+    // Visit all unvisited neighbouring cities
+    while (temp != NULL) {
+        if (!visited[temp->cityIndex]) {
+            DFS(temp->cityIndex, adjList);
+        }
+
+        temp = temp->next;
+    }
+}
+
+// Function to check graph connectivity
+void checkConnectivity(struct Node *adjList[]) {
+    int i, connected = 1;
+
+    if (numCities == 0) {
+        printf("No cities available to check connectivity.\n");
+        return;
+    }
+
+    // Reset visited array
+    for (i = 0; i < numCities; i++)
+        visited[i] = 0;
+
+    // Start DFS from first city
+    printf("\nDFS Traversal: ");
+    DFS(0, adjList);
+
+    // Check whether all cities are visited
+    for (i = 0; i < numCities; i++) {
+        if (!visited[i]) {
+            connected = 0;
+            break;
+        }
+    }
+
+    if (connected)
+        printf("\nResult: The graph IS CONNECTED!\n");
+    else
+        printf("\nResult: The graph is NOT CONNECTED!\n");
+}
+
+// Function to free allocated memory
+void freeGraph(struct Node *adjList[]) {
+    int i;
+    struct Node *temp, *next;
+
+    for (i = 0; i < numCities; i++) {
+        temp = adjList[i];
+
+        while (temp != NULL) {
+            next = temp->next;
+            free(temp);
+            temp = next;
+        }
+    }
+}
+
+int main() {
+    struct Node *adjList[MAX_CITIES];
+
+    int choice, numFlights, cost;
+    int i, srcIndex, destIndex;
+
+    char srcCity[30], destCity[30];
+
+    // Initialize all adjacency lists to NULL
+    for (i = 0; i < MAX_CITIES; i++)
+        adjList[i] = NULL;
+
+    do {
+        printf("\n===== FLIGHT PATH MANAGEMENT =====\n");
+        printf("1. Enter Cities\n");
+        printf("2. Add Flight Route\n");
+        printf("3. Display Flight Paths\n");
+        printf("4. Check Graph Connectivity\n");
+        printf("5. Exit\n");
+
+        printf("Enter choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+
+            case 1:
+                printf("Enter number of cities (max %d): ",
+                       MAX_CITIES);
+                scanf("%d", &numCities);
+
+                if (numCities < 1 || numCities > MAX_CITIES) {
+                    printf("Invalid number of cities!\n");
+                    numCities = 0;
+                    break;
+                }
+
+                for (i = 0; i < numCities; i++) {
+                    printf("Enter name for City %d: ", i + 1);
+                    scanf("%29s", cityNames[i]);
+                }
+
+                break;
+
+            case 2:
+                if (numCities == 0) {
+                    printf("Enter cities first!\n");
+                    break;
+                }
+
+                printf("Enter number of flight routes: ");
+                scanf("%d", &numFlights);
+
+                for (i = 0; i < numFlights; i++) {
+                    printf("\nFlight %d:\n", i + 1);
+
+                    printf("Source City: ");
+                    scanf("%29s", srcCity);
+
+                    printf("Destination City: ");
+                    scanf("%29s", destCity);
+
+                    printf("Flight Cost: ");
+                    scanf("%d", &cost);
+
+                    srcIndex = getCityIndex(srcCity);
+                    destIndex = getCityIndex(destCity);
+
+                    if (srcIndex != -1 && destIndex != -1) {
+                        addFlight(adjList, srcIndex,
+                                  destIndex, cost);
+                    }
+                    else {
+                        printf("Invalid city names! Flight skipped.\n");
+                    }
+                }
+
+                break;
+
+            case 3:
+                displayGraph(adjList);
+                break;
+
+            case 4:
+                checkConnectivity(adjList);
+                break;
+
+            case 5:
+                printf("Exiting program...\n");
+                break;
+
+            default:
+                printf("Invalid selection! Try again.\n");
+        }
+
+    } while (choice != 5);
+
+    // Free dynamically allocated memory
+    freeGraph(adjList);
+
+    return 0;
+}
